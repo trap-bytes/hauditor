@@ -42,11 +42,11 @@ var colorMap = map[string]string{
 
 func ValidateTargetFlags(urlFlag, fileFlag string) error {
 	if urlFlag != "" && fileFlag != "" {
-		return fmt.Errorf("you can supply either a single target or a file, but not both\n Example usage: ./403jump -t domain.com")
+		return fmt.Errorf("you can supply either a single target or a file, but not both\n Example usage: ./hauditor -t domain.com")
 	}
 
 	if urlFlag == "" && fileFlag == "" {
-		return fmt.Errorf("please provide a target.\n Example usage: ./403jump -t domain.com\n Use -h for help")
+		return fmt.Errorf("please provide a target.\n Example usage: ./hauditor -t domain.com\n Use -h for help")
 	}
 
 	return nil
