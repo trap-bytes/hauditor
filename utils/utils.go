@@ -190,6 +190,7 @@ func PrintHelp() {
 	fmt.Println("  -c string    Specify cookies (e.g., \"user_token=g3p21ip21h;\" ")
 	fmt.Println("  -r string    Specify headers (e.g., \"Myheader: test\")")
 	fmt.Println("  -timeout     Specify connection timeout in seconds (Default 10)")
+	fmt.Println("  -j           Output results in JSON format")
 	fmt.Println("  -h           Display help")
 
 	fmt.Println("\nExamples:")

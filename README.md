@@ -2,7 +2,7 @@
 
 ## Overview
 
-hauditor is a tool designed to analyze the security headers returned by a web page and report dangerous configurations. 
+hauditor is a tool designed to analyze the security headers returned by a web page and report dangerous configurations.
 
 
 ![hauditor Image](https://github.com/trap-bytes/hauditor/blob/main/static/hauditor.png)
@@ -39,9 +39,10 @@ The arguments are:
   -m string    HTTP method (HEAD, GET, POST, PUT, etc.)
   -b string    HTTP request body
   -p string    Specify the proxy URL (e.g., 127.0.0.1:8080)
-  -c string    Specify cookies (e.g., "user_token=g3p21ip21h;" 
+  -c string    Specify cookies (e.g., "user_token=g3p21ip21h;"
   -r string    Specify headers (e.g., "Myheader: test")
   -timeout     Timeout for HTTP requests in seconds
+  -j           Output in JSON format
   -h           Display help
 
 Examples:

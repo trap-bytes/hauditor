@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -12,9 +14,6 @@ import (
 )
 
 func main() {
-
-	utils.PrintBanner()
-
 	var urlFlag string
 	var fileFlag string
 	var proxy string
@@ -23,6 +22,7 @@ func main() {
 	var method string
 	var body string
 	var timeout int
+	var jsonOutput bool
 	var client *http.Client
 
 	flag.StringVar(&urlFlag, "t", "", "Specify the target URL (e.g., domain.com or https://domain.com)")
@@ -33,10 +33,18 @@ func main() {
 	flag.StringVar(&cookie, "c", "", "Specify cookies (e.g., user_token=g3p21ip21h; )")
 	flag.StringVar(&header, "r", "", "Specify headers (e.g., Myheader: test )")
 	flag.IntVar(&timeout, "timeout", 10, "Specify connection timeout in seconds")
+	flag.BoolVar(&jsonOutput, "j", false, "Output results in JSON format")
 
 	helpFlag := flag.Bool("h", false, "Display help")
 
 	flag.Parse()
+
+	originalStdout := os.Stdout
+	if jsonOutput {
+		os.Stdout = nil
+	}
+
+	utils.PrintBanner()
 
 	if *helpFlag {
 		utils.PrintHelp()
@@ -98,7 +106,29 @@ func main() {
 			},
 		}
 
-		target.ProcessTarget(false)
+		ok, result := target.ProcessTarget(false)
+
+		if !ok {
+			fmt.Println("Error processing target")
+			return
+		}
+
+		os.Stdout = originalStdout
+
+		if jsonOutput {
+			b, err := json.Marshal(result)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			fmt.Println(string(b))
+		} else {
+			for _, r := range result.Responses {
+				for _, msg := range r.ConsoleMessages {
+					fmt.Println(msg)
+				}
+			}
+		}
 	} else {
 		fmt.Printf(utils.Colorize("Processing targets from file: %s\n", "", true), fileFlag)
 
@@ -108,7 +138,9 @@ func main() {
 			return
 		}
 
-		for _, url := range entries {
+		results := make([]auditor.TargetResponse, len(entries))
+
+		for i, url := range entries {
 			validUrl, err := utils.ValidateUrl(url)
 			if err != nil {
 				fmt.Printf("Error: %v\n\n", err)
@@ -125,7 +157,33 @@ func main() {
 					Body: body,
 				},
 			}
-			target.ProcessTarget(true)
+			ok, result := target.ProcessTarget(true)
+
+			if !ok {
+				fmt.Println("Error processing target")
+				return
+			}
+
+			results[i] = result
+		}
+
+		os.Stdout = originalStdout
+
+		if jsonOutput {
+			b, err := json.Marshal(results)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			fmt.Println(string(b))
+		} else {
+			for _, result := range results {
+				for _, r := range result.Responses {
+					for _, msg := range r.ConsoleMessages {
+						fmt.Println(msg)
+					}
+				}
+			}
 		}
 	}
 }
